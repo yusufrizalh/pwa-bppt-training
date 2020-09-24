@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB Sample</title>
+
+    <!-- jquery CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- <script src="./js/jquery.js"></script>  -->
+
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // cek browser support terhadap indexedDB atau tidak 
+            var request, db;
+            if (!window.indexedDB) {
+                console.log("Browser tidak support IndexedDB!");
+            }
+            else {  // browser support IndexedDB
+                request = window.indexedDB.open("testIndexedDB", 25);
+                request.onerror = function (event) {
+                    console.log("Error ketika membuka DB", event);
+                }
+                request.onupgradeneeded = function (event) {
+                    console.log("Upgrading...");
+                    db = event.target.result;
+                    var objectStore = db.createObjectStore("students",
+                        {keyPath: "rollNo", autoIncrement: true});
+                }
+                request.onsuccess = function (event) {
+                    console.log("Berhasil membuka DB!");
+                    db = event.target.result;
+                }
+            }
+
+            // membuat fungsi untuk addBtn
+            $("#addBtn").click(function () {
+                console.log("Button Add diklik!");
+                // fields yang disimpan kedalam objectStore
+                var firstName = $('#firstName').val();
+                var lastName = $('#lastName').val();
+                var city = $('#city').val();
+                var mobile = $('#mobile').val();
+
+                var transaction = db.transaction(['students'], "readwrite");
+                var objectStore = transaction.objectStore("students");
+                objectStore.add({
+                    FirstName: firstName, LastName: lastName,
+                    City: city, Mobile: mobile
+                });
+
+                transaction.oncomplete = function (event) {
+                    console.log("Sukses membuat objectStore!");
+                    $('#result').html("Tambah data berhasil!");
+                    showAllData();
+                };
+
+                transaction.onerror = function (event) {
+                    console.log("Gagal membuat objectStore!");
+                    $('#result').html("Tambah data gagal!");
+                }
+            });
+
+            // membuat fungsi untuk clearBtn
+            $('#clearBtn').click(function () {
+                clearTextBox();
+            });
+
+            function clearTextBox() {
+                $('#firstName').val('');
+                $('#lastName').val('');
+                $('#city').val('');
+                $('#mobile').val('');
+            }
+
+            // membuat fungsi untuk show all
+            $('#btnShowAll').click(function () {
+                showAllData();
+            });
+
+            function showAllData() {
+                var request = db.transaction(["students"], "readonly")
+                    .objectStore("students").getAll();
+                request.onsuccess = function (event) {
+                    var obj = request.result
+                    var table = '<table class="table table-striped table-hover"><thead class="thead-dark"> <th>ID</th> <th>First Name</th> <th>Last Name</th> <th>City</th> <th>Mobile</th> </thead> <tbody>';
+                    $.each(obj, function () {
+                        table += '<tr><td>' + this['rollNo'] + '</td> <td>' + this['FirstName'] + '</td> <td>' + this['LastName'] + '</td> <td>' + this['City'] + '</td> <td>' + this['Mobile'] + '</td> </tr>';
+                    });
+                    table += '</tbody> </table>';
+
+                    $("#datalist").html(table);
+                };
+            }
+
+            // membuat fungsi untuk show (mencari 1 data) 
+            $('#btnShow').click(function () {
+                var id = parseInt($('#txtSearch').val());
+                var request = db.transaction(["students"], "readonly")
+                    .objectStore("students").get(id);
+                request.onsuccess = function (event) {
+                    var res = request.result;
+                    if (res != null) {   // jika data ditemukan 
+                        $('#firstName').val(res.FirstName);
+                        $('#lastName').val(res.LastName);
+                        $('#city').val(res.City);
+                        $('#mobile').val(res.Mobile);
+                    }
+                    else {  // jika data tidak ditemukan 
+                        clearTextBox();
+                        alert('Data tidak ditemukan!');
+                    }
+                };
+            });
+
+            // membuat fungsi untuk updateBtn 
+            $('#updateBtn').click(function () {
+                // fields yang diubah kedalam objectStore
+                var rollNo = parseInt($('#txtSearch').val());
+                var firstName = $('#firstName').val();
+                var lastName = $('#lastName').val();
+                var city = $('#city').val();
+                var mobile = $('#mobile').val();
+
+                var transaction = db.transaction(["students"], "readwrite");
+                var objectStore = transaction.objectStore("students");
+                var request = objectStore.get(rollNo);
+
+                request.onsuccess = function (event) {
+                    request.result.FirstName = firstName;
+                    request.result.LastName = lastName;
+                    request.result.City = city;
+                    request.result.Mobile = mobile;
+
+                    objectStore.put(request.result);
+                    alert('Data dengan ID: ' + rollNo + ' berhasil diubah!');
+                    showAllData();
+                };
+            });
+
+            // membuat fungsi untuk deleteBtn 
+            $('#deleteBtn').click(function () {
+                var id = parseInt($('#txtSearch').val());
+                db.transaction(["students"], "readwrite")
+                    .objectStore("students").delete(id);
+                alert('Data dengan ID: ' + id + ' berhasil dihapus!');
+                showAllData();
+            });
+
+        });
+
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="form-group">
+            <form>
+                <table class="table">
+                    <tr>
+                        <td>First Name</td>
+                        <td>
+                            <input type="text" name="rollno" id="firstName">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last Name</td>
+                        <td>
+                            <input type="text" name="name" id="lastName">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td>
+                            <input type="text" name="name" id="city">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Phone</td>
+                        <td>
+                            <input type="text" name="name" id="mobile">
+                        </td>
+                    </tr>
+
+                    <!-- action button -->
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="button" value="Add" name="addBtn" id="addBtn">
+                            <input type="button" value="Update" name="updateBtn" id="updateBtn">
+                            <input type="button" value="Delete" name="deleteBtn" id="deleteBtn">
+                            <input type="button" value="Clear" name="clearBtn" id="clearBtn">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <div id="result"></div>
+                        </td>
+                    </tr>
+                </table>
+                <hr>
+
+                <!-- form cari dan tampilkan data -->
+                <table class="table">
+                    <tr>
+                        <td colspan="2">Form Edit Data</td>
+                    </tr>
+                    <tr>
+                        <td>Find Data by ID</td>
+                        <td>
+                            <input type="text" name="txtSearch" id="txtSearch">
+                            <input type="button" value="Show" name="btnShow" id="btnShow">
+                            <input type="button" value="Show All" name="btnShow" id="btnShowAll">
+                        </td>
+                    </tr>
+                </table>
+                <hr>
+
+                <div class="table table-striped" id="datalist"></div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "Simple PWA",
+  "short_name": "simple-pwa",
+  "description": "PWA example for training",
+  "icons": [
+    {
+      "src": "../images/smiley.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable 144px"
+    },
+    {
+      "src": "../images/smiley.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable 192px"
+    },
+    {
+      "src": "../images/smiley.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable 512px"
+    }
+  ],
+  "theme_color": "#da2f7c",
+  "background_color": "#e21ca4",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/index.html"
+}

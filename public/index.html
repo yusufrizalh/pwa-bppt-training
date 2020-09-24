@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#da2f7c">
+
+    <link rel="manifest" href="./js/pwa.webmanifest">
+    <link rel="apple-touch-icon" href="./images/apple-touch.png">
+
+    <!-- jquery CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- <script src="./js/jquery.js"></script>  -->
+
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+
+    <title>My First PWA</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <span>Contoh PWA sederhana</span>
+        <br>
+        <span>Status anda adalah </span>
+        <span><b class="page-status">online</b></span>
+        <br> <br>
+        <span>Ini ada update dari server</span>
+        <br><br>
+        <span>Ini ada update dari server - 2</span>
+
+        <br><br>
+        <img src="./images/notification.png" height="100px" width="100px" alt="notification.png tidak di cache">
+        <br><br>
+
+        <button id="btn-notification" 
+        class="btn-notification btn btn-primary btn-block" >
+            Show local notification
+        </button>
+
+        <a href="./indexeddb-sample.html" class="btn btn-info btn-block">Open IndexedDB</a>
+
+        <script src="./js/pwa.js"></script>
+        <script src="./js/status.js"></script>
+        <script src="./js/notification.js"></script>
+
+    </div>
+</body>
+
+</html>
